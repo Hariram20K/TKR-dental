@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKR Dental Care | Doctor & Clinic Admin Portal</title>
+  <meta name="description" content="Unified Doctor and Admin Clinical Portal for TKR Dental Care & Implant Centre with live sync to the Patient Mobile App.">
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-tooth"></i>
+        </div>
+        <div class="brand-text">
+          <h2>TKR DENTAL</h2>
+          <span class="badge-role" id="portalRoleBadge">DOCTOR PORTAL</span>
+        </div>
+      </div>
+
+      <!-- Live Sync Status Pill -->
+      <div class="sync-status-box">
+        <div class="sync-pulse">
+          <span class="pulse-dot"></span>
+          <span class="sync-label" id="syncStatusText">Syncing to Patient App</span>
+        </div>
+        <small class="sync-sub" id="syncSubText">Port 5000 • Live 2-Way Channel</small>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-menu">
+        <div class="menu-section-label">CLINICAL SUITE</div>
+        <button class="nav-btn active" data-tab="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Clinical Dashboard</span>
+        </button>
+        <button class="nav-btn" data-tab="odontogram">
+          <i class="fa-solid fa-teeth"></i>
+          <span>32-Tooth Odontogram</span>
+        </button>
+        <button class="nav-btn" data-tab="appointments">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Appointments & Chairs</span>
+          <span class="counter-badge" id="todayAptCount">4</span>
+        </button>
+        <button class="nav-btn" data-tab="queue">
+          <i class="fa-solid fa-users-line"></i>
+          <span>Reception Queue</span>
+          <span class="counter-badge highlight" id="waitingQueueCount">3</span>
+        </button>
+        <button class="nav-btn" data-tab="treatments">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Treatment Plans</span>
+        </button>
+        <button class="nav-btn" data-tab="prescriptions">
+          <i class="fa-solid fa-prescription"></i>
+          <span>Digital Rx Pad</span>
+        </button>
+
+        <div class="menu-section-label">CLINIC ADMIN & ERP</div>
+        <button class="nav-btn" data-tab="patients">
+          <i class="fa-solid fa-hospital-user"></i>
+          <span>Patient Directory</span>
+        </button>
+        <button class="nav-btn" data-tab="billing">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Billing & UPI Invoices</span>
+        </button>
+        <button class="nav-btn" data-tab="inventory">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <span>Pharmacy & Stock</span>
+        </button>
+        <button class="nav-btn" data-tab="lab-orders">
+          <i class="fa-solid fa-microscope"></i>
+          <span>Dental Lab Orders</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer User Profile -->
+      <div class="sidebar-user">
+        <div class="user-avatar" id="currentUserAvatar">👩‍⚕️</div>
+        <div class="user-info">
+          <strong id="currentUserName">Dr. E. Rajalakshmi</strong>
+          <span id="currentUserRoleDesc">Chief Dental Surgeon</span>
+        </div>
+        <button class="role-toggle-btn" id="toggleRoleBtn" title="Switch between Doctor and Admin views">
+          <i class="fa-solid fa-repeat"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Action Bar -->
+      <header class="top-bar">
+        <div class="top-title-area">
+          <h1 id="pageTitle">Doctor Clinical Dashboard</h1>
+          <p id="pageSubtitle">Real-time clinical overview, today's chair appointments, and live patient queue</p>
+        </div>
+
+        <div class="top-actions">
+          <!-- Active Patient Context Dropdown -->
+          <div class="patient-selector">
+            <label><i class="fa-solid fa-circle-user"></i> Active Patient:</label>
+            <select id="activePatientSelect">
+              <!-- populated dynamically -->
+            </select>
+          </div>
+
+          <!-- Quick Actions -->
+          <button class="btn btn-outline" id="quickAddQueueBtn">
+            <i class="fa-solid fa-ticket"></i> Issue Token
+          </button>
+          <button class="btn btn-primary" id="quickNewAptBtn">
+            <i class="fa-solid fa-plus"></i> New Appointment
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Screen Views -->
+      <div class="tab-viewport">
+        <!-- 1. DASHBOARD TAB -->
+        <section class="tab-pane active" id="pane-dashboard">
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-calendar-day"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="kpiAptCount">4</span>
+                <span class="kpi-label">Today's Appointments</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon amber"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="kpiWaitingCount">3</span>
+                <span class="kpi-label">Waiting in Queue</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon emerald"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="kpiRevenue">₹19,300</span>
+                <span class="kpi-label">Today's Collections</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon purple"><i class="fa-solid fa-tooth"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="kpiTreatmentsCount">3</span>
+                <span class="kpi-label">Active Treatment Plans</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Announcement & Active Patient Banner -->
+          <div class="dashboard-banner">
+            <div class="banner-left">
+              <div class="pulse-ring"></div>
+              <div>
+                <h3>Reception Live Voice Caller</h3>
+                <p id="liveCallerStatus">Calling Token: <strong>TKR-Q-101</strong> (Rahul Verma) &bull; Operatory 1</p>
+              </div>
+            </div>
+            <button class="btn btn-voice" id="dashCallNextBtn">
+              <i class="fa-solid fa-bullhorn"></i> Announce Next Token
+            </button>
+          </div>
+
+          <div class="dash-grid-2">
+            <!-- Today's Schedule Card -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3><i class="fa-regular fa-clock"></i> Today's Schedule</h3>
+                <span class="pill-badge" id="scheduleDateBadge">Today</span>
+              </div>
+              <div class="appointment-list" id="dashAppointmentsList">
+                <!-- dynamically rendered -->
+              </div>
+            </div>
+
+            <!-- Reception Queue Monitor -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-users"></i> Live Queue Ticker</h3>
+                <button class="btn-text" id="viewFullQueueBtn">View Full Board &rarr;</button>
+              </div>
+              <div class="queue-list" id="dashQueueList">
+                <!-- dynamically rendered -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. ODONTOGRAM TAB -->
+        <section class="tab-pane" id="pane-odontogram">
+          <div class="odontogram-container">
+            <div class="odontogram-sidebar">
+              <div class="panel-card">
+                <h3>Patient Dental Chart</h3>
+                <p class="patient-chart-header" id="odontogramPatientName">Rahul Verma (TKR-P-1001)</p>
+                <div class="chart-legend">
+                  <div class="legend-item"><span class="legend-color cond-healthy"></span> Healthy</div>
+                  <div class="legend-item"><span class="legend-color cond-caries"></span> Caries (Cavity)</div>
+                  <div class="legend-item"><span class="legend-color cond-filling"></span> Composite Filling</div>
+                  <div class="legend-item"><span class="legend-color cond-crown"></span> Crown / Cap</div>
+                  <div class="legend-item"><span class="legend-color cond-rct"></span> Root Canal (RCT)</div>
+                  <div class="legend-item"><span class="legend-color cond-implant"></span> Dental Implant</div>
+                  <div class="legend-item"><span class="legend-color cond-missing"></span> Missing</div>
+                  <div class="legend-item"><span class="legend-color cond-extraction"></span> Needs Extraction</div>
+                </div>
+
+                <div class="tooth-editor" id="toothEditorBox">
+                  <h4>Selected Tooth: <span id="selectedToothNumDisplay">#19</span></h4>
+                  <label>Diagnosis / Condition:</label>
+                  <select id="editToothCondition" class="form-control">
+                    <option value="healthy">Healthy</option>
+                    <option value="caries">Caries (Cavity)</option>
+                    <option value="filling">Restored / Filling</option>
+                    <option value="crown">Crown / Cap</option>
+                    <option value="rct">Root Canal (RCT)</option>
+                    <option value="implant">Dental Implant</option>
+                    <option value="missing">Missing Tooth</option>
+                    <option value="extraction">Indicated for Extraction</option>
+                  </select>
+
+                  <label>Involved Surfaces:</label>
+                  <div class="surface-checkboxes">
+                    <label><input type="checkbox" name="surf" value="O"> Occlusal (O)</label>
+                    <label><input type="checkbox" name="surf" value="M"> Mesial (M)</label>
+                    <label><input type="checkbox" name="surf" value="D"> Distal (D)</label>
+                    <label><input type="checkbox" name="surf" value="B"> Buccal (B)</label>
+                    <label><input type="checkbox" name="surf" value="L"> Lingual (L)</label>
+                  </div>
+
+                  <label>Clinical Notes:</label>
+                  <textarea id="editToothNotes" class="form-control" rows="2" placeholder="e.g. Zirconia crown cemented, margin intact..."></textarea>
+
+                  <button class="btn btn-primary btn-block" id="saveToothBtn">
+                    <i class="fa-solid fa-floppy-disk"></i> Update Odontogram & Sync App
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Odontogram Chart Canvas -->
+            <div class="odontogram-main panel-card">
+              <div class="odontogram-canvas-header">
+                <div>
+                  <h3>Interactive 32-Tooth Anatomical Chart</h3>
+                  <small>Click any tooth to inspect surfaces or apply clinical diagnosis</small>
+                </div>
+                <span class="pill-badge" id="odontogramSyncStatus"><i class="fa-solid fa-cloud-arrow-up"></i> Live Cloud Synced</span>
+              </div>
+
+              <!-- Upper Arch -->
+              <div class="arch-section">
+                <div class="arch-title">UPPER ARCH (MAXILLARY)</div>
+                <div class="teeth-row" id="upperArchTeeth">
+                  <!-- Generated Teeth 1-16 -->
+                </div>
+              </div>
+
+              <!-- Lower Arch -->
+              <div class="arch-section">
+                <div class="arch-title">LOWER ARCH (MANDIBULAR)</div>
+                <div class="teeth-row" id="lowerArchTeeth">
+                  <!-- Generated Teeth 17-32 -->
+                </div>
+              </div>
+
+              <!-- Tooth History Table -->
+              <div class="patient-teeth-history">
+                <h4>Diagnosed Conditions for Selected Patient</h4>
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Tooth #</th>
+                        <th>Condition</th>
+                        <th>Surfaces</th>
+                        <th>Clinical Notes</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="patientTeethTableBody">
+                      <!-- dynamically populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. APPOINTMENTS TAB -->
+        <section class="tab-pane" id="pane-appointments">
+          <div class="appointments-view">
+            <div class="appointments-filter-bar">
+              <div class="filter-group">
+                <label>Filter Chair:</label>
+                <select id="filterChairSelect" class="form-control">
+                  <option value="all">All Operatory Chairs</option>
+                  <option value="Chair 1">Chair 1 (Main Operatory)</option>
+                  <option value="Chair 2">Chair 2 (Aligner Suite)</option>
+                  <option value="Chair 3">Chair 3 (Surgical Operatory)</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" id="openBookAptModalBtn">
+                <i class="fa-solid fa-calendar-plus"></i> Book Consultation
+              </button>
+            </div>
+
+            <div class="table-responsive panel-card">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Time / Date</th>
+                    <th>Patient Name</th>
+                    <th>Doctor</th>
+                    <th>Chair</th>
+                    <th>Procedure Type</th>
+                    <th>Status</th>
+                    <th>Clinical Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="appointmentsTableBody">
+                  <!-- dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. QUEUE TAB -->
+        <section class="tab-pane" id="pane-queue">
+          <div class="queue-manager-layout">
+            <div class="queue-top-banner panel-card">
+              <div class="banner-token-display">
+                <span class="token-lbl">NOW CALLING IN OPERATORY 1:</span>
+                <h2 id="queueNowCallingToken">TKR-Q-101</h2>
+                <p id="queueNowCallingPatient">Rahul Verma &bull; Dr. E. Rajalakshmi</p>
+              </div>
+              <div class="banner-token-actions">
+                <button class="btn btn-voice btn-lg" id="btnPlayTokenChime">
+                  <i class="fa-solid fa-volume-high"></i> Voice Chime Announcement
+                </button>
+              </div>
+            </div>
+
+            <div class="queue-grid-cols">
+              <!-- Issue Token Panel -->
+              <div class="panel-card">
+                <h3><i class="fa-solid fa-ticket"></i> Issue Reception Token</h3>
+                <div class="form-group">
+                  <label>Select Patient:</label>
+                  <select id="queuePatientSelect" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                  <label>Priority:</label>
+                  <select id="queuePrioritySelect" class="form-control">
+                    <option value="Normal">Normal</option>
+                    <option value="Urgent">Urgent (Severe Pain / Trauma)</option>
+                    <option value="Senior">Senior Citizen / Child</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-block" id="btnIssueQueueToken">
+                  <i class="fa-solid fa-plus-circle"></i> Generate Token
+                </button>
+              </div>
+
+              <!-- Live Queue List -->
+              <div class="panel-card queue-table-container">
+                <h3>Live Waiting Room (Reception Board)</h3>
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Token</th>
+                        <th>Patient</th>
+                        <th>Arrival</th>
+                        <th>Priority</th>
+                        <th>Room</th>
+                        <th>Status</th>
+                        <th>Voice Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                      <!-- dynamically populated -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. TREATMENTS TAB -->
+        <section class="tab-pane" id="pane-treatments">
+          <div class="panel-card">
+            <div class="flex-between">
+              <div>
+                <h3>Clinical Treatment Plans</h3>
+                <p>Tooth-specific procedures, stage transitions, and financial estimates</p>
+              </div>
+              <button class="btn btn-primary" id="openNewTreatmentModalBtn">
+                <i class="fa-solid fa-plus"></i> New Treatment Plan
+              </button>
+            </div>
+
+            <div id="treatmentsContainer" class="treatment-cards-grid">
+              <!-- dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. PRESCRIPTIONS TAB -->
+        <section class="tab-pane" id="pane-prescriptions">
+          <div class="rx-layout">
+            <!-- Rx Form -->
+            <div class="panel-card">
+              <h3><i class="fa-solid fa-notes-medical"></i> Digital Prescription Pad</h3>
+              <div class="form-group">
+                <label>Patient:</label>
+                <select id="rxPatientSelect" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label>Doctor:</label>
+                <input type="text" id="rxDoctorInput" class="form-control" value="Dr. E. Rajalakshmi, BDS, MDS" readonly>
+              </div>
+
+              <!-- Quick Medication Preset Buttons -->
+              <label>Quick Dental Presets:</label>
+              <div class="preset-pills">
+                <button type="button" class="pill-btn" onclick="addMedPreset('Amoxicillin + Clavulanate 625mg', '1 Tablet', 'Twice daily (after food)', '5 Days', 'Complete full course')">+ Amoxiclav 625</button>
+                <button type="button" class="pill-btn" onclick="addMedPreset('Ibuprofen 400mg', '1 Tablet', 'Twice daily (after food)', '3 Days', 'Take for dental pain')">+ Ibuprofen 400</button>
+                <button type="button" class="pill-btn" onclick="addMedPreset('Aceclofenac + Paracetamol', '1 Tablet', 'Twice daily', '3 Days', 'Anti-inflammatory')">+ Aceclo-Plus</button>
+                <button type="button" class="pill-btn" onclick="addMedPreset('Metronidazole 400mg', '1 Tablet', 'Thrice daily', '5 Days', 'For anaerobic infection')">+ Metro 400</button>
+                <button type="button" class="pill-btn" onclick="addMedPreset('Chlorhexidine 0.2% Rinse', '10 ml', 'Twice daily', '7 Days', 'Swish for 60s after brushing')">+ CHX Rinse</button>
+              </div>
+
+              <div id="rxMedsList" class="rx-meds-list">
+                <!-- List of items to prescribe -->
+              </div>
+
+              <div class="form-group">
+                <label>Special Clinical Advice & Post-Op Instructions:</label>
+                <textarea id="rxInstructions" class="form-control" rows="2" placeholder="e.g. Avoid hot liquids for 24h, soft diet, warm saline rinse from tomorrow..."></textarea>
+              </div>
+
+              <button class="btn btn-primary btn-block" id="btnSavePrescription">
+                <i class="fa-solid fa-file-signature"></i> Sign & Issue Digital Rx to Patient App
+              </button>
+            </div>
+
+            <!-- Existing Prescriptions List -->
+            <div class="panel-card">
+              <h3>Recent Digital Prescriptions</h3>
+              <div id="prescriptionsListContainer" class="prescriptions-stream">
+                <!-- dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. PATIENTS DIRECTORY TAB -->
+        <section class="tab-pane" id="pane-patients">
+          <div class="panel-card">
+            <div class="flex-between">
+              <div>
+                <h3>Patient Records Directory</h3>
+                <p>Comprehensive patient charts, allergy warnings, vitals, and medical histories</p>
+              </div>
+              <button class="btn btn-primary" id="openAddPatientModalBtn">
+                <i class="fa-solid fa-user-plus"></i> Register New Patient
+              </button>
+            </div>
+
+            <div class="search-bar-wrap">
+              <input type="text" id="searchPatientInput" class="form-control" placeholder="Search by patient name, ID, phone number...">
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Name / Age / Gender</th>
+                    <th>Phone</th>
+                    <th>Blood</th>
+                    <th>Allergies Alert</th>
+                    <th>Vitals (BP / Sugar)</th>
+                    <th>Balance Due</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                  <!-- dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. BILLING & INVOICES TAB -->
+        <section class="tab-pane" id="pane-billing">
+          <div class="billing-stats-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon emerald"><i class="fa-solid fa-receipt"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="totalInvoicedStat">₹22,300</span>
+                <span class="kpi-label">Total Invoiced</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="totalPaidStat">₹15,000</span>
+                <span class="kpi-label">Total Collected</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-num" id="totalOutstandingStat">₹7,300</span>
+                <span class="kpi-label">Pending Balances</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="flex-between">
+              <h3>Clinic Invoices & Receipts</h3>
+              <button class="btn btn-primary" id="openNewInvoiceModalBtn">
+                <i class="fa-solid fa-file-invoice"></i> Generate Invoice
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Procedures</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Payment Action</th>
+                  </tr>
+                </thead>
+                <tbody id="invoicesTableBody">
+                  <!-- dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. PHARMACY & INVENTORY TAB -->
+        <section class="tab-pane" id="pane-inventory">
+          <div class="panel-card">
+            <div class="flex-between">
+              <div>
+                <h3>Pharmacy, Dental Blanks & Consumables</h3>
+                <p>Track clinical stock levels, batch numbers, and expiry alerts</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Item Description</th>
+                    <th>Category</th>
+                    <th>Batch</th>
+                    <th>Current Stock</th>
+                    <th>Min Level</th>
+                    <th>Expiry Date</th>
+                    <th>Unit Price</th>
+                    <th>Stock Action</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                  <!-- dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. LAB ORDERS TAB -->
+        <section class="tab-pane" id="pane-lab-orders">
+          <div class="panel-card">
+            <div class="flex-between">
+              <div>
+                <h3>Dental Laboratory Prosthetic Orders</h3>
+                <p>Tracking custom crowns, aligners, PFM, and bridges from partner labs</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Patient</th>
+                    <th>Dental Lab</th>
+                    <th>Prosthetic Item</th>
+                    <th>Tooth / Shade</th>
+                    <th>Sent Date</th>
+                    <th>Expected Delivery</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                  </tr>
+                </thead>
+                <tbody id="labOrdersTableBody">
+                  <!-- dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Book Appointment -->
+  <div class="modal-backdrop" id="modalBookAppointment">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-plus"></i> Schedule New Consultation</h3>
+        <button class="modal-close" onclick="closeModal('modalBookAppointment')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Patient:</label>
+          <select id="modalAptPatientSelect" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>Doctor:</label>
+          <select id="modalAptDoctorSelect" class="form-control">
+            <option value="DOC-1">Dr. E. Rajalakshmi (Chief Surgeon)</option>
+            <option value="DOC-2">Dr. S. Karthikeyan (Orthodontist)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date:</label>
+            <input type="date" id="modalAptDate" class="form-control" value="2026-09-10">
+          </div>
+          <div class="form-group">
+            <label>Time Slot:</label>
+            <select id="modalAptTime" class="form-control">
+              <option value="09:30 AM">09:30 AM</option>
+              <option value="10:00 AM">10:00 AM</option>
+              <option value="11:00 AM">11:00 AM</option>
+              <option value="11:45 AM">11:45 AM</option>
+              <option value="02:30 PM">02:30 PM</option>
+              <option value="04:00 PM">04:00 PM</option>
+              <option value="05:30 PM">05:30 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Operatory Chair:</label>
+            <select id="modalAptChair" class="form-control">
+              <option value="Chair 1">Chair 1 (Main Operatory)</option>
+              <option value="Chair 2">Chair 2 (Aligner Suite)</option>
+              <option value="Chair 3">Chair 3 (Surgical Suite)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Procedure Type:</label>
+            <select id="modalAptType" class="form-control">
+              <option value="Routine Scaling & Checkup">Routine Scaling & Checkup</option>
+              <option value="Root Canal Treatment (RCT)">Root Canal Treatment (RCT)</option>
+              <option value="Crown Seating / Impression">Crown Seating / Impression</option>
+              <option value="Orthodontic Braces Review">Orthodontic Braces Review</option>
+              <option value="Dental Extraction">Dental Extraction</option>
+              <option value="Implant Consultation">Implant Consultation</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Clinical Notes:</label>
+          <input type="text" id="modalAptNotes" class="form-control" placeholder="Optional notes for operatory staff">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalBookAppointment')">Cancel</button>
+        <button class="btn btn-primary" id="btnConfirmCreateApt">Confirm & Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Record Payment & UPI QR -->
+  <div class="modal-backdrop" id="modalRecordPayment">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-qrcode"></i> Collect Patient Payment</h3>
+        <button class="modal-close" onclick="closeModal('modalRecordPayment')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-payment-card">
+          <p>Scan with any UPI App (GPay, PhonePe, Paytm):</p>
+          <div class="qr-box">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=tkrdental@okhdfcbank%26pn=TKR%20DENTAL%20CARE%26cu=INR" alt="UPI QR">
+          </div>
+          <h2 id="modalPayAmountDisplay">₹2,300</h2>
+          <small>TKR DENTAL CARE &bull; UPI ID: tkrdental@okhdfcbank</small>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Payment Method:</label>
+          <select id="modalPayMethod" class="form-control">
+            <option value="UPI QR">UPI QR / Digital</option>
+            <option value="Cash">Cash at Reception</option>
+            <option value="Card">Debit / Credit Card (POS)</option>
+            <option value="Insurance">Dental Insurance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount to Record (₹):</label>
+          <input type="number" id="modalPayAmountInput" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalRecordPayment')">Cancel</button>
+        <button class="btn btn-primary" id="btnConfirmRecordPayment">Mark Paid & Sync</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Register Patient -->
+  <div class="modal-backdrop" id="modalAddPatient">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> New Patient Registration</h3>
+        <button class="modal-close" onclick="closeModal('modalAddPatient')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" id="newPatName" class="form-control" placeholder="Patient's Full Name" required>
+          </div>
+          <div class="form-group">
+            <label>Age:</label>
+            <input type="number" id="newPatAge" class="form-control" value="30">
+          </div>
+          <div class="form-group">
+            <label>Gender:</label>
+            <select id="newPatGender" class="form-control">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number:</label>
+            <input type="tel" id="newPatPhone" class="form-control" placeholder="+91 98765 00000">
+          </div>
+          <div class="form-group">
+            <label>Email Address:</label>
+            <input type="email" id="newPatEmail" class="form-control" placeholder="patient@example.com">
+          </div>
+          <div class="form-group">
+            <label>Blood Group:</label>
+            <select id="newPatBlood" class="form-control">
+              <option value="O+">O+</option>
+              <option value="A+">A+</option>
+              <option value="B+">B+</option>
+              <option value="AB+">AB+</option>
+              <option value="O-">O-</option>
+              <option value="A-">A-</option>
+              <option value="B-">B-</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Residential Address:</label>
+          <input type="text" id="newPatAddress" class="form-control" placeholder="Address, City, State">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Drug Allergies Alert:</label>
+            <input type="text" id="newPatAllergies" class="form-control" placeholder="e.g. Penicillin, NSAIDs or NKDA">
+          </div>
+          <div class="form-group">
+            <label>Medical History:</label>
+            <input type="text" id="newPatHistory" class="form-control" placeholder="e.g. Hypertension, Diabetes, Asthma">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modalAddPatient')">Cancel</button>
+        <button class="btn btn-primary" id="btnConfirmAddPatient">Register & Open Chart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

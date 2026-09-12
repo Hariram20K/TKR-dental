@@ -1,0 +1,15 @@
+{
+  "name": "tkr-dental-management-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TKR Dental Management System",
+  "scripts": {
+    "start": "npm --prefix frontend start -- -c",
+    "frontend": "npm --prefix frontend start -- -c",
+    "backend": "npm --prefix backend start",
+    "server": "npm --prefix backend start",
+    "web": "npm --prefix frontend run web",
+    "android": "npm --prefix frontend run android",
+    "ios": "npm --prefix frontend run ios"
+  }
+}

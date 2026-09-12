@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%" style="background:#0a0a0f; font-family:monospace;">
+  <defs>
+    <radialGradient id="xrayGlow2" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2a3342" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#141824" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#07090e" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="lesionGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a0c12" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#161c28" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#28303f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#xrayGlow2)"/>
+
+  <!-- Alveolar Bone Base -->
+  <path d="M 0,150 Q 200,165 400,150 L 400,300 L 0,300 Z" fill="#2d3748" opacity="0.85"/>
+
+  <!-- Tooth #30: Lower Right 1st Molar with Endodontic Access & Files -->
+  <g id="tooth30">
+    <!-- Roots -->
+    <path d="M 150,150 C 135,185 130,235 142,248 C 152,235 160,190 165,155 Z" fill="#586680"/>
+    <path d="M 195,155 C 205,190 210,238 200,250 C 190,238 180,190 170,155 Z" fill="#586680"/>
+
+    <!-- Periapical Radiolucency (Lesion at mesial apex) -->
+    <circle cx="140" cy="252" r="14" fill="url(#lesionGrad)"/>
+    <circle cx="202" cy="253" r="10" fill="url(#lesionGrad)"/>
+
+    <!-- Tooth Crown with Access Cavity -->
+    <path d="M 130,150 C 130,105 215,105 215,150 Z" fill="#667591"/>
+    <!-- Access cavity cut into crown -->
+    <path d="M 155,105 L 190,105 L 185,135 L 160,135 Z" fill="#121722"/>
+
+    <!-- Endodontic K-Files #15 & #20 inserted (Radiopaque metal lines) -->
+    <!-- Mesial Canal File with Stopper -->
+    <path d="M 165,85 L 165,135 Q 155,190 143,246" fill="none" stroke="#f1f5f9" stroke-width="1.8"/>
+    <!-- Distal Canal File with Stopper -->
+    <path d="M 180,85 L 180,135 Q 188,190 200,248" fill="none" stroke="#f1f5f9" stroke-width="2"/>
+
+    <!-- Rubber Stop References at Cusp Tip -->
+    <rect x="160" y="105" width="10" height="4" rx="1" fill="#38bdf8"/>
+    <rect x="175" y="105" width="10" height="4" rx="1" fill="#fbbf24"/>
+  </g>
+
+  <!-- Adjacent Teeth #29 and #31 -->
+  <g opacity="0.65">
+    <!-- Tooth 29 -->
+    <path d="M 90,150 C 95,185 92,230 88,240 C 82,228 82,185 84,150 Z" fill="#4a5568"/>
+    <path d="M 75,150 C 75,115 102,115 102,150 Z" fill="#5a667b"/>
+    <!-- Tooth 31 -->
+    <path d="M 260,150 C 255,185 260,230 268,242 C 275,230 282,185 285,150 Z" fill="#4a5568"/>
+    <path d="M 245,150 C 245,110 300,110 300,150 Z" fill="#5a667b"/>
+  </g>
+
+  <!-- Overlay Text & Findings -->
+  <g fill="#94a3b8" font-size="9">
+    <text x="15" y="25">TKR DENTAL CLINIC - BELLANDUR</text>
+    <text x="15" y="40">PATIENT: KARTHIK SUBRAMANIAN (TKR-P-1003)</text>
+    <text x="15" y="55">IOPA RVG #30 WORKING LENGTH | DR. E. RAJALAKSHMI</text>
+    <text x="310" y="25">2026-09-01</text>
+    <text x="310" y="40">WL: MB 21mm, D 21.5mm</text>
+    <text x="310" y="55">APEX: 0.5mm TO FORAMEN</text>
+  </g>
+
+  <!-- Working Length callouts -->
+  <g stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" opacity="0.7">
+    <line x1="165" y1="105" x2="110" y2="105"/>
+    <line x1="143" y1="246" x2="110" y2="246"/>
+    <line x1="110" y1="105" x2="110" y2="246"/>
+    <text x="50" y="175" fill="#38bdf8" font-size="9" stroke="none">MB: 21.0 mm</text>
+  </g>
+</svg>
